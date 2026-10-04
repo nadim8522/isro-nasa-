@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ISRO – NASA Screening Test</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#07152f;color:#fff;font-family:Arial,sans-serif}
+main{max-width:850px;margin:25px auto;padding:15px}
+.card{background:#102447;border:1px solid #345078;border-radius:18px;padding:25px}
+h1,h2{text-align:center}
+header{text-align:center;color:#b8c7e6}
+input,select{width:100%;padding:12px;margin:7px 0 15px;border-radius:8px;border:1px solid #789;background:#07152f;color:white}
+button{padding:13px 16px;border:0;border-radius:9px;cursor:pointer;font-size:16px;font-weight:bold}
+.primary{background:#66d9ef;color:#07152f}
+.secondary{background:#29466f;color:white}
+button:disabled{opacity:.6;cursor:not-allowed}
+.full{width:100%}
+.hidden{display:none!important}
+.urdu{direction:rtl;text-align:right;line-height:2;font-family:"Jameel Noori Nastaleeq","Jameel Urdu Nastaleeq","Noto Nastaliq Urdu","Noto Naskh Arabic",serif}
+.question{font-size:25px;margin:25px 0}
+.option{display:block;width:100%;text-align:right;direction:rtl;background:#0a1b35;color:white;border:1px solid #48658f;margin:10px 0;line-height:1.8}
+.option.correct{background:#14533f}
+.option.wrong{background:#652d3a}
+#feedback{padding:15px;margin-top:15px;border:1px solid #54749d;border-radius:10px}
+.bar{height:8px;background:#07152f;margin:15px 0;border-radius:10px;overflow:hidden}
+#fill{height:100%;background:#66d9ef;width:0}
+footer{text-align:center;color:#b8c7e6;margin-top:25px;line-height:1.8}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
+.row button{flex:1}
+.summary{line-height:2;background:#07152f;padding:15px;border-radius:10px}
+.item{border:1px solid #345078;padding:15px;margin:12px 0;border-radius:10px}
+@media(max-width:600px){main{margin:5px auto;padding:8px}.card{padding:17px}.question{font-size:21px}.row{flex-direction:column}}
+</style>
+</head>
+<body>
+<main>
+<section id="home" class="card">
+<header>Panchayat Samiti Educational Department, Majalgaon</header>
+<h1>🚀 ISRO – NASA Screening Test 🛰️</h1>
+<h2>🌌 Practice Test 🌍</h2>
+<h3>👨‍🚀 Student Information</h3>
+<form id="studentForm">
+<label>👤 Student Name</label>
+<input id="student" required maxlength="100" placeholder="Enter Student Name">
+<label>📚 Class</label>
+<select id="className" required>
+<option value="">Select Class</option>
+<option>5</option><option>6</option><option>7</option><option>8</option>
+</select>
+<label>🏫 Name of School</label>
+<input id="school" required maxlength="150" placeholder="Enter School Name">
+<label>📍 Taluka</label>
+<input id="taluka" required maxlength="100" placeholder="Enter Taluka">
+<button class="primary full" type="submit">🚀 START PRACTICE TEST 🚀</button>
+</form>
+<footer>
+Test designed by: Syed Nadimuddin Kalimuddin Jafri<br>
+<strong>Z.P.P. Urdu School, Nitrud</strong>
+</footer>
+</section>
+
+<section id="quiz" class="card hidden">
+<div class="urdu" id="progress">سوال 1 از 50</div>
+<div class="bar"><div id="fill"></div></div>
+<div id="question" class="urdu question"></div>
+<div id="options" class="urdu"></div>
+<div id="feedback" class="urdu hidden" aria-live="polite"></div>
+<div class="row"><button id="next" class="primary hidden">اگلا سوال →</button></div>
+</section>
+
+<section id="result" class="card hidden">
+<h2 class="urdu">🎉 ٹیسٹ مکمل ہوگیا!</h2>
+<div id="studentSummary" class="summary"></div>
+<h1 id="score"></h1>
+<h2 id="percentage"></h2>
+<div id="counts" class="urdu"></div>
+<p id="saveStatus" class="urdu"></p>
+<div class="row">
+<button id="reviewBtn" class="secondary">📖 Review Answers</button>
+<button id="mistakesBtn" class="secondary">💡 Learn from Mistakes</button>
+<button id="retakeBtn" class="primary">🔄 دوبارہ ٹیسٹ دیں</button>
+</div>
+</section>
+
+<section id="review" class="card hidden">
+<h2 class="urdu">جوابات کا جائزہ</h2>
+<div id="reviewList"></div>
+<div class="row">
+<button id="backBtn" class="secondary">نتیجے پر واپس جائیں</button>
+<button id="reviewRetake" class="primary">دوبارہ ٹیسٹ دیں</button>
+</div>
+</section>
+</main>
+
+<script>
+// Paste your deployed Google Apps Script Web App URL here.
+const APPS_SCRIPT_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+const Q = [
+["سورج کے گرد سیاروں کے مجموعے کو کیا کہتے ہیں؟",["شمسی نظام","کہکشاں","ستاروں کا جھرمٹ","فضائی تہہ"],0,"سورج اور اس کے گرد گردش کرنے والے اجرام شمسی نظام بناتے ہیں۔"],
+["سورج کے سب سے قریب کون سا سیارہ ہے؟",["زہرہ","عطارد","زمین","مریخ"],1,"عطارد سورج کے سب سے قریب سیارہ ہے۔"],
+["زمین سورج سے کون سے نمبر پر ہے؟",["پہلے","دوسرے","تیسرے","چوتھے"],2,"زمین سورج سے تیسرا سیارہ ہے۔"],
+["شمسی نظام کا سب سے بڑا سیارہ کون سا ہے؟",["زحل","مشتری","نیپچون","زمین"],1,"مشتری شمسی نظام کا سب سے بڑا سیارہ ہے۔"],
+["نمایاں حلقوں کے لیے کون سا سیارہ مشہور ہے؟",["زحل","عطارد","زمین","مریخ"],0,"زحل کے حلقے بہت نمایاں ہیں۔"],
+["دن اور رات کیوں ہوتے ہیں؟",["زمین کی محوری گردش سے","چاند کی گردش سے","سورج کے زمین کے گرد گھومنے سے","مریخ کی حرکت سے"],0,"زمین اپنے محور پر گھومتی ہے، اس لیے دن اور رات ہوتے ہیں۔"],
+["زمین سورج کا ایک چکر تقریباً کتنے وقت میں لگاتی ہے؟",["24 گھنٹے","ایک ماہ","365 دن اور تقریباً 6 گھنٹے","12 گھنٹے"],2,"زمین کو سورج کا چکر مکمل کرنے میں تقریباً ایک سال لگتا ہے۔"],
+["چاند کی روشنی کا اصل ذریعہ کیا ہے؟",["اپنی آگ","زمین","سورج کی منعکس روشنی","ستارے"],2,"چاند سورج کی روشنی منعکس کرتا ہے۔"],
+["زمین کا قدرتی سیارہ کون سا ہے؟",["فوبوس","چاند","ٹائٹن","یوروپا"],1,"چاند زمین کا قدرتی سیارہ ہے۔"],
+["ستارے روشن کیوں ہوتے ہیں؟",["اپنی روشنی پیدا کرتے ہیں","چاند کی روشنی لوٹاتے ہیں","زمین کے قریب ہیں","بادل روشن کرتے ہیں"],0,"ستارے اپنے اندر توانائی پیدا کرکے روشنی خارج کرتے ہیں۔"],
+["ہماری کہکشاں کا نام کیا ہے؟",["اینڈرومیڈا","ملکی وے","سومبریرو","اورائن"],1,"ہمارا شمسی نظام ملکی وے کہکشاں میں ہے۔"],
+["خلاباز کون ہوتا ہے؟",["سمندری غوطہ خور","خلا میں کام اور تحقیق کے لیے تربیت یافتہ شخص","صرف راکٹ بنانے والا","موسم کا ماہر"],1,"خلاباز خلا میں تجربات اور مشن کے کام انجام دیتے ہیں۔"],
+["ISRO کس ملک کا خلائی ادارہ ہے؟",["امریکہ","روس","بھارت","جاپان"],2,"ISRO بھارت کا خلائی ادارہ ہے۔"],
+["NASA کس ملک کا خلائی ادارہ ہے؟",["امریکہ","بھارت","چین","فرانس"],0,"NASA امریکہ کا قومی فضائی و خلائی ادارہ ہے۔"],
+["راکٹ کا بنیادی کام کیا ہے؟",["ہوا صاف کرنا","سامان کو خلا یا مدار کی طرف لے جانا","بارش پیدا کرنا","زمین کی گردش روکنا"],1,"راکٹ زور پیدا کرکے سامان کو مطلوبہ سمت میں لے جاتا ہے۔"],
+["مصنوعی سیٹلائٹ کیا ہے؟",["قدرتی سیارچہ","انسان کا بنایا ہوا مدار میں گردش کرنے والا جسم","دم دار ستارہ","بونا سیارہ"],1,"مصنوعی سیٹلائٹ انسان بناتا ہے اور اسے مدار میں بھیجتا ہے۔"],
+["چاند گرہن کب ہوتا ہے؟",["چاند سورج اور زمین کے درمیان ہو","زمین کا سایہ چاند پر پڑے","سورج غائب ہو جائے","مریخ چاند کو ڈھانپ لے"],1,"چاند گرہن میں زمین سورج اور چاند کے درمیان آتی ہے۔"],
+["سورج گرہن میں ترتیب کیا ہوتی ہے؟",["سورج، زمین، چاند","زمین، سورج، چاند","سورج، چاند، زمین","چاند، زمین، سورج"],2,"سورج گرہن میں چاند سورج اور زمین کے درمیان آتا ہے۔"],
+["موسموں کی تبدیلی کی اہم وجہ کیا ہے؟",["زمین کے محور کا جھکاؤ اور سورج کے گرد گردش","صرف روزانہ گردش","چاند کا دور ہونا","سورج کا ہر سال ٹھنڈا ہونا"],0,"محور کا جھکاؤ اور زمین کی گردش دھوپ کی مقدار بدلتے ہیں۔"],
+["اگر کسی سیارے کا سال زمین سے لمبا ہو تو کیا مطلب ہے؟",["اسے سورج کا چکر مکمل کرنے میں زیادہ وقت لگتا ہے","اس کا دن ہمیشہ 24 گھنٹے ہے","وہ گردش نہیں کرتا","اس کے پاس فضا نہیں"],0,"سیارے کا سال سورج کے گرد ایک مکمل چکر کا وقت ہے۔"],
+["کون سے سیارے چٹانی سیارے ہیں؟",["مشتری اور زحل","یورینس اور نیپچون","عطارد اور مریخ","زحل اور نیپچون"],2,"عطارد، زہرہ، زمین اور مریخ اندرونی چٹانی سیارے ہیں۔"],
+["مشتری اور زحل کس قسم کے سیارے ہیں؟",["چٹانی","گیسی دیو ہیکل","بونے","دم دار"],1,"مشتری اور زحل گیسی دیو ہیکل سیارے ہیں۔"],
+["یورینس اور نیپچون کو کیا کہا جاتا ہے؟",["برفیلے دیو ہیکل سیارے","چٹانی سیارے","بونے سیارے","دم دار ستارے"],0,"یورینس اور نیپچون کو ice giants کہا جاتا ہے۔"],
+["پلوٹو کو کس زمرے میں رکھا جاتا ہے؟",["ستارہ","بونا سیارہ","زمین جیسا سیارہ","قدرتی سیٹلائٹ"],1,"پلوٹو ایک بونا سیارہ ہے۔"],
+["سیارچوں کی اہم پٹی کہاں ہے؟",["زمین اور چاند کے درمیان","مریخ اور مشتری کے درمیان","سورج کے اندر","نیپچون کے بادلوں میں"],1,"بڑی سیارچوں کی پٹی مریخ اور مشتری کے درمیان ہے۔"],
+["دم دار ستارے کی دم کیوں بنتی ہے؟",["زمین کی کشش سے","سورج کی حرارت سے گیس اور گرد نکلنے سے","چاند کی روشنی سے","اس کے سیارہ بننے سے"],1,"سورج کے قریب آنے پر برف گرم ہوتی ہے اور گیس و گرد خارج ہوتے ہیں۔"],
+["چاند کے مختلف مراحل کیوں دکھائی دیتے ہیں؟",["چاند کی شکل بدلتی ہے","ہم روشن حصے کا مختلف حصہ دیکھتے ہیں","زمین چاند کو روشن کرتی ہے","بادل چاند کو کاٹ دیتے ہیں"],1,"سورج، زمین اور چاند کی پوزیشن بدلنے سے چاند کے مراحل نظر آتے ہیں۔"],
+["زمین پر مائع پانی کے لیے کون سی چیز مددگار ہے؟",["مناسب فاصلہ اور سازگار حالات","زمین کے حلقے","فضا کی عدم موجودگی","سورج سے سب سے زیادہ دوری"],0,"زمین کا درجۂ حرارت اور فضا مائع پانی کے لیے سازگار ہیں۔"],
+["دونوں نصف کروں میں موسم اکثر الٹ کیوں ہوتے ہیں؟",["زمین گھومتی نہیں","محور کے جھکاؤ سے دھوپ کی مقدار مختلف ہوتی ہے","چاند سورج کو ٹھنڈا کرتا ہے","زمین رک جاتی ہے"],1,"محور کا جھکاؤ شمالی اور جنوبی نصف کروں میں دھوپ بدلتا ہے۔"],
+["خلائی دوربین کا ایک فائدہ کیا ہے؟",["کششِ ثقل ختم کرتی ہے","فضا کے بعض اثرات سے اوپر مشاہدہ کرتی ہے","ستارے قریب لے آتی ہے","سیاروں کی گردش روک دیتی ہے"],1,"خلائی دوربینیں فضا کے بعض اثرات سے بچ کر مشاہدہ کرتی ہیں۔"],
+["Apollo 11 کس ادارے کا مشن تھا؟",["ISRO","NASA","ESA","JAXA"],1,"NASA کے Apollo 11 نے 1969 میں انسانوں کو پہلی بار چاند پر اتارا۔"],
+["چندریان-3 نے چاند پر کامیاب نرم لینڈنگ کس سال کی؟",["2019","2021","2023","2025"],2,"چندریان-3 نے اگست 2023 میں چاند پر کامیاب نرم لینڈنگ کی۔"],
+["منگل یان کس سیارے کے مطالعے کے لیے تھا؟",["زہرہ","مریخ","مشتری","عطارد"],1,"منگل یان بھارت کا مریخ کے مطالعے کا مشن تھا۔"],
+["Aditya-L1 کا بنیادی مقصد کیا ہے؟",["چاند پر انسان بھیجنا","سورج کا مطالعہ کرنا","مریخ پر اترنا","سمندر کا نقشہ بنانا"],1,"Aditya-L1 سورج کے مطالعے کے لیے بھارت کا شمسی مشن ہے۔"],
+["Gaganyaan پروگرام کا مقصد کیا ہے؟",["انسانی خلائی پرواز کی صلاحیت تیار کرنا","زحل کے حلقے بدلنا","چاند کو قریب لانا","صرف موسم کی پیش گوئی"],0,"Gaganyaan بھارت کا انسانی خلائی پرواز پروگرام ہے۔"],
+["موسمی سیٹلائٹ کس طرح مدد دیتے ہیں؟",["بادلوں اور فضا کا مشاہدہ کرکے","بارش ہاتھ سے روک کر","زمین کا محور بدل کر","سورج کی روشنی بند کرکے"],0,"موسمی سیٹلائٹ بادلوں اور طوفانوں کی نگرانی کرتے ہیں۔"],
+["GPS جیسے نظام میں سیٹلائٹ کس کام آتے ہیں؟",["مقام معلوم کرنے میں","آکسیجن بنانے میں","سیارے پیدا کرنے میں","زلزلے روکنے میں"],0,"نیویگیشن سیٹلائٹس کے سگنل مقام معلوم کرنے میں مدد دیتے ہیں۔"],
+["کسی جسم کو مدار میں رکھنے کے لیے کیا ضروری ہے؟",["مناسب رفتار اور سمت","بہت زیادہ رنگ","چاند کی اجازت","زمین سے بندھا ہونا"],0,"مدار میں رہنے کے لیے رفتار اور کششِ ثقل کا توازن اہم ہے۔"],
+["اگر زمین کی محوری گردش رک جائے تو کیا ہوگا؟",["معمول کا 24 گھنٹے کا دن رات جاری رہے گا","معمول کا روزانہ دن رات کا چکر برقرار نہیں رہے گا","ایک دن ایک گھنٹے کا ہوگا","چاند غائب ہوگا"],1,"دن اور رات کا روزانہ چکر زمین کی محوری گردش سے پیدا ہوتا ہے۔"],
+["دور کے سیارے کا سال عموماً لمبا کیوں ہوتا ہے؟",["مدار بڑا اور مداری رفتار عموماً کم ہوتی ہے","اس میں کشش نہیں ہوتی","اس پر دن نہیں ہوتا","اسے سورج کی روشنی نہیں ملتی"],0,"دور کے سیاروں کو بڑا مدار طے کرنا ہوتا ہے اور ان کی رفتار عموماً کم ہوتی ہے۔"],
+["چاند پر قدموں کے نشان طویل عرصے تک کیوں رہ سکتے ہیں؟",["وہاں ہوا اور بارش جیسا موسم نہیں","وہاں بہت سے درخت ہیں","سمندر نشان صاف کرتے ہیں","سطح مائع ہے"],0,"چاند پر زمین جیسا موسم، ہوا اور بارش نہیں ہوتے۔"],
+["مدار میں خلائی جہاز زمین پر کیوں نہیں گرتا؟",["وہ کششِ ثقل سے باہر ہے","وہ آگے کی رفتار کے ساتھ مسلسل گرتے ہوئے زمین کے گرد چکر لگاتا ہے","زمین اسے دھکیلتی ہے","وقت رک جاتا ہے"],1,"مداری جسم زمین کی کشش میں گرتا رہتا ہے مگر آگے کی رفتار اسے مدار میں رکھتی ہے۔"],
+["اگر چاند کا سایہ زمین تک نہ پہنچے تو سورج گرہن کی کون سی قسم ممکن ہے؟",["صرف مکمل","حلقوی گرہن","چاند گرہن","کوئی مدار نہیں"],1,"چاند کے فاصلے اور سائے کی بنا پر حلقوی سورج گرہن ہو سکتا ہے۔"],
+["عام دھوپ کے چشمے سورج دیکھنے کے لیے محفوظ کیوں نہیں؟",["وہ سورج کو بڑا کرتے ہیں","وہ نقصان دہ روشنی کو محفوظ حد تک نہیں روکتے","سورج رات کو نکلتا ہے","وہ زمین کی گردش روکتے ہیں"],1,"براہ راست سورج دیکھنے کے لیے منظور شدہ شمسی فلٹر ضروری ہے۔"],
+["روبوٹک روور بھیجنے کا ایک فائدہ کیا ہے؟",["خطرناک سطح کا مطالعہ انسانی عملے کے بغیر کرنا","اسے توانائی نہیں چاہیے","وہ ہمیشہ زمین پر واپس آتا ہے","وہ ہر جگہ انسان سے تیز ہے"],0,"روور دور دراز سطحوں پر آلات کے ذریعے تحقیق کر سکتا ہے۔"],
+["دور ستارے کی روشنی کئی سال بعد پہنچے تو ہم اسے کب کی حالت میں دیکھتے ہیں؟",["اسی لمحے کی","ماضی کی","مستقبل کی","دیکھ نہیں سکتے"],1,"روشنی کو سفر میں وقت لگتا ہے، اس لیے دور ستارے کو ماضی کی حالت میں دیکھتے ہیں۔"],
+["کہکشاں اور شمسی نظام میں کیا فرق ہے؟",["کہکشاں میں صرف ایک سیارہ ہوتا ہے","شمسی نظام ایک ستارے اور اس کے گرد اجسام کا نظام ہے، کہکشاں میں بہت سے ستارے ہوتے ہیں","دونوں ایک ہیں","شمسی نظام کہکشاں سے بڑا ہے"],1,"ہمارا شمسی نظام ملکی وے کہکشاں کا ایک چھوٹا حصہ ہے۔"],
+["NASA کے Artemis پروگرام کا ایک مقصد کیا ہے؟",["چاند پر انسانوں کی واپسی اور تحقیق","زمین کی فضا ختم کرنا","مریخ کو قریب لانا","سورج بند کرنا"],0,"Artemis پروگرام چاند پر انسانی تحقیق اور مستقبل کے مشنوں کی تیاری کرتا ہے۔"],
+["قطبی مدار میں سیٹلائٹ کا فائدہ کیا ہے؟",["وقت کے ساتھ زمین کے مختلف حصوں کا مشاہدہ","ہمیشہ خط استوا پر رہنا","سورج میں جانا","زمین کی گردش روکنا"],0,"قطبی مدار سیٹلائٹ کو زمین کے مختلف علاقوں کے اوپر سے گزرنے دیتا ہے۔"],
+["چاند پر دن اور رات زمین سے طویل کیوں ہیں؟",["چاند کی محوری گردش بہت آہستہ ہے","چاند سورج کے گرد نہیں گھومتا","سورج کی روشنی نہیں پہنچتی","زمین اسے گھماتی نہیں"],0,"چاند کی گردش کی وجہ سے وہاں دن رات کا دورانیہ زمین سے کہیں زیادہ ہے۔"],
+["راکٹ گیس نیچے خارج کرکے اوپر کیسے جاتا ہے؟",["عمل اور ردعمل کے اصول سے","گیس اسے مقناطیس بناتی ہے","کششِ ثقل ختم ہوتی ہے","وزن صفر ہوجاتا ہے"],0,"گیس نیچے خارج ہوتی ہے اور راکٹ مخالف سمت میں زور حاصل کرتا ہے۔"],
+["سورج کے قریب سیارے کا سال عموماً کیسا ہوتا ہے؟",["زیادہ لمبا","کم لمبا","ہمیشہ برابر","مدار نہیں ہوتا"],1,"قریب کے سیارے کا مدار عموماً چھوٹا ہوتا ہے، اس لیے سال کم لمبا ہوتا ہے۔"],
+["دوربین مختلف طول موج میں مشاہدہ کیوں کرتی ہے؟",["مختلف طول موجیں کائنات کے مختلف پہلو دکھاتی ہیں","ہر طول موج ایک جیسی ہے","ستارے زمین پر آتے ہیں","روشنی کی رفتار بدلتی ہے"],0,"مختلف شعاعیں کائنات کے مختلف اجسام اور عمل کے بارے میں معلومات دیتی ہیں۔"],
+["صرف چاندوں کی تعداد سے سیارے کے سائز کا اندازہ کیوں نہیں لگایا جا سکتا؟",["چاندوں کی تعداد اور سیارے کا سائز لازماً متناسب نہیں","ہر سیارہ ستارہ ہوتا ہے","چاند سورج کے گرد نہیں گھومتے","سیاروں کا سائز نہیں ہوتا"],0,"مختلف سائز کے سیاروں کے چاندوں کی تعداد مختلف ہو سکتی ہے۔"],
+["خلائی تحقیق میں ڈیٹا کی جانچ کیوں اہم ہے؟",["نتائج کی درستگی اور قابلِ اعتماد ہونے کے لیے","ڈیٹا چھپانے کے لیے","مشن سست کرنے کے لیے","سیٹلائٹ کا رنگ بدلنے کے لیے"],0,"ڈیٹا کی جانچ غلطیوں کو پہچاننے اور سائنسی نتائج کی تصدیق میں مدد دیتی ہے۔"]
+];
+
+let studentInfo={},answers=[],order=[],pos=0,attempt=1,submitted=false,lastResult=null;
+const $=id=>document.getElementById(id);
+function show(id){["home","quiz","result","review"].forEach(x=>$(x).classList.toggle("hidden",x!==id));window.scrollTo(0,0)}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+$("studentForm").addEventListener("submit",e=>{e.preventDefault();studentInfo={student:$("student").value.trim(),className:$("className").value,school:$("school").value.trim(),taluka:$("taluka").value.trim()};attempt=1;start()});
+function start(){answers=Array(50).fill(null);order=shuffle(Q.map((_,i)=>i));pos=0;submitted=false;lastResult=null;show("quiz");render()}
+function render(){let qi=order[pos],q=Q[qi];$("progress").textContent=`سوال ${pos+1} از 50`;$("fill").style.width=`${pos/50*100}%`;$("question").textContent=q[0];$("feedback").classList.add("hidden");$("next").classList.add("hidden");$("options").innerHTML="";let opts=shuffle(q[1].map((t,i)=>({t,i})));opts.forEach((o,k)=>{let b=document.createElement("button");b.className="option";b.innerHTML=`<b>${String.fromCharCode(65+k)}.</b> ${esc(o.t)}`;b.onclick=()=>answer(o.i,b,opts);$("options").appendChild(b)})}
+function answer(selected,button,opts){let qi=order[pos];if(answers[qi]!==null)return;answers[qi]=selected;[...$("options").children].forEach((b,k)=>{b.disabled=true;if(opts[k].i===Q[qi][2])b.classList.add("correct");if(opts[k].i===selected&&selected!==Q[qi][2])b.classList.add("wrong")});let good=selected===Q[qi][2];$("feedback").innerHTML=`<strong>${good?"درست جواب ✓":"غلط جواب ✗"}</strong><br>${good?"":"صحیح جواب: "+esc(Q[qi][1][Q[qi][2]])+"<br>"}${esc(Q[qi][3])}`;$("feedback").classList.remove("hidden");$("next").textContent=pos===49?"نتیجہ دیکھیں →":"اگلا سوال →";$("next").classList.remove("hidden")}
+$("next").onclick=()=>{if(answers[order[pos]]===null)return;if(pos<49){pos++;render()}else finish()};
+function finish(){let correct=answers.filter((a,i)=>a===Q[i][2]).length;let incorrect=answers.filter((a,i)=>a!==null&&a!==Q[i][2]).length;let unattempted=answers.filter(a=>a===null).length;lastResult={studentName:studentInfo.student,class:studentInfo.className,schoolName:studentInfo.school,taluka:studentInfo.taluka,attemptNumber:attempt,score:correct,percentage:correct*2,correct,incorrect,unattempted,testVersion:"1.0"};$("studentSummary").innerHTML=`Student: ${esc(studentInfo.student)}<br>Class: ${esc(studentInfo.className)}<br>School: ${esc(studentInfo.school)}<br>Taluka: ${esc(studentInfo.taluka)}<br>Attempt: ${attempt}`;$("score").textContent=`${correct} / 50`; $("percentage").textContent=`${correct*2}%`;$("counts").innerHTML=`صحیح جوابات: ${correct}<br>غلط جوابات: ${incorrect}<br>غیر حل شدہ سوالات: ${unattempted}`;show("result");saveResult()}
+async function saveResult(){let s=$("saveStatus");if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL.includes("PASTE_YOUR")){s.textContent="Google Sheets ابھی منسلک نہیں ہے۔ نتیجہ اسکرین پر دکھایا گیا ہے لیکن محفوظ نہیں ہوا۔";return}if(submitted)return;submitted=true;s.textContent="نتیجہ محفوظ کیا جا رہا ہے…";try{let r=await fetch(APPS_SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(lastResult)});let d=await r.json();if(!d.success)throw Error(d.message||"Save failed");s.textContent="نتیجہ Google Sheets میں محفوظ ہوگیا۔"}catch(e){submitted=false;s.innerHTML=`نتیجہ محفوظ نہیں ہوسکا۔ دوبارہ کوشش کریں۔ <button id="retry">Retry</button>`;$("retry").onclick=saveResult}}
+function review(mistakes){$("reviewList").innerHTML="";order.forEach((qi,n)=>{let q=Q[qi],a=answers[qi],ok=a===q[2];if(mistakes&&ok)return;let d=document.createElement("div");d.className="item urdu";d.innerHTML=`<b>سوال ${n+1}: ${esc(q[0])}</b><p>${a===null?"جواب نہیں دیا": "آپ کا جواب: "+esc(q[1][a])}</p><p>صحیح جواب: ${esc(q[1][q[2]])}</p><p>${esc(q[3])}</p><strong>${a===null?"غیر حل شدہ":ok?"درست جواب":"غلط جواب"}</strong>`;$("reviewList").appendChild(d)});show("review")}
+$("reviewBtn").onclick=()=>review(false);$("mistakesBtn").onclick=()=>review(true);$("backBtn").onclick=()=>show("result");
+function retake(){attempt++;start()}
+$("retakeBtn").onclick=retake;$("reviewRetake").onclick=retake;
+</script>
+</body>
+</html>
